@@ -1,0 +1,71 @@
+name: Bug report
+description: Report a reproducible StudyForge problem
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Do not include API keys, authentication tokens, or private study material.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open...
+        2. Upload or paste...
+        3. Select...
+        4. Observe...
+    validations:
+      required: true
+  - type: dropdown
+    id: input
+    attributes:
+      label: Study-material input
+      options:
+        - Demo content
+        - Pasted text
+        - TXT or Markdown
+        - PDF
+        - DOCX
+        - Not applicable
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Generation provider
+      options:
+        - Local provider
+        - OpenAI provider
+        - Unknown or not applicable
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, Node.js version, and deployment type when relevant.
+      placeholder: Windows 11, Edge, Node 24, local development
+    validations:
+      required: true
+  - type: textarea
+    id: sanitized_details
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Remove secrets, account information, and private study material before attaching anything.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed secrets and private study material from this report.
+          required: true

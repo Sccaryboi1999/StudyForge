@@ -6,6 +6,33 @@ export const runtime = "nodejs";
 const MAX_SIZE = 10 * 1024 * 1024;
 const allowed = new Set(["txt", "md", "markdown", "pdf", "docx"]);
 
+function structuredPdfText(items: unknown[]) {
+  const lines: string[] = [];
+  let current = "";
+  for (const item of items) {
+    if (!item || typeof item !== "object" || !("str" in item)) continue;
+    const textItem = item as { str?: string; hasEOL?: boolean };
+    const value = textItem.str?.replace(/\s+/g, " ").trim() ?? "";
+    if (value) current += `${current ? " " : ""}${value}`;
+    if (textItem.hasEOL && current) {
+      lines.push(current);
+      current = "";
+    }
+  }
+  if (current) lines.push(current);
+
+  const reflowed: string[] = [];
+  for (const line of lines) {
+    const previous = reflowed.at(-1);
+    if (previous && !/[.!?:;]$/.test(previous) && /^[a-z(]/.test(line)) {
+      reflowed[reflowed.length - 1] = `${previous} ${line}`;
+    } else {
+      reflowed.push(line);
+    }
+  }
+  return reflowed.join("\n");
+}
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.formData();
@@ -33,7 +60,7 @@ export async function POST(request: NextRequest) {
         for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber++) {
           const page = await document.getPage(pageNumber);
           const content = await page.getTextContent();
-          pages.push(content.items.map((item) => "str" in item ? item.str : "").join(" "));
+          pages.push(structuredPdfText(content.items));
         }
         text = pages.join("\n\n");
         if (text.trim().length < 80) warnings.push("Very little text was detected. This PDF may contain scanned images and require OCR.");
